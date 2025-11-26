@@ -411,6 +411,20 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.2);
     z-index: 1000;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+/* Esconder legenda quando sidebar aberta */
+.sidebar.active ~ .legend {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Esconder minimap quando sidebar aberta */
+.sidebar.active ~ #openseadragon-viewer .openseadragon-navigator {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
 }
 
 .legend-title {
