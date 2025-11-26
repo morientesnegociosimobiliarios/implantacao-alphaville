@@ -24,12 +24,26 @@
     <!-- Tooltip -->
     <div class="lote-tooltip" id="tooltip"></div>
 
-    <!-- Sidebar -->
+    <!-- Sidebar Desktop -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-title" id="sidebar-title">Lote</div>
+            <div class="sidebar-title" id="sidebar-title">Lotes Disponíveis</div>
             <button class="close-btn" onclick="closeSidebar()">×</button>
         </div>
+        
+        <!-- Legenda -->
+        <div class="sidebar-legend">
+            <div class="legend-item-sidebar">
+                <div class="legend-color-sidebar" style="background: linear-gradient(135deg, #10b981, #059669);"></div>
+                <span>Lote Disponível</span>
+            </div>
+            <div class="legend-item-sidebar">
+                <div class="legend-color-sidebar" style="background: linear-gradient(135deg, #3b82f6, #2563eb);"></div>
+                <span>Lote Selecionado</span>
+            </div>
+        </div>
+        
+        <!-- Lista de Lotes -->
         <div class="sidebar-content" id="sidebar-content"></div>
     </div>
 
