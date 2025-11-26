@@ -64,8 +64,12 @@ let currentSelectedLoteId = null;
 let tooltipFixo = false;
 const isMobile = window.innerWidth <= 768;
 
+console.log('Script carregado. isMobile:', isMobile);
+
 // Inicialização
 window.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM carregado, criando viewer...');
+    
     viewer = OpenSeadragon({
         id: "openseadragon-viewer",
         prefixUrl: "https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/images/",
@@ -84,12 +88,26 @@ window.addEventListener('DOMContentLoaded', function() {
     });
     
     viewer.addHandler('open', function() {
+        console.log('Viewer aberto!');
         document.getElementById('loading').style.display = 'none';
-        criarMarcadoresLotes();
         
-        if (!isMobile) {
-            criarListaLotes();
-        }
+        // AGUARDAR os overlays estarem completamente prontos
+        viewer.addHandler('animation-finish', function inicializarMarcadores() {
+            console.log('Animação finalizada, criando marcadores...');
+            
+            // Remover este handler para não executar várias vezes
+            viewer.removeHandler('animation-finish', inicializarMarcadores);
+            
+            // Aguardar mais um pouco para garantir
+            setTimeout(() => {
+                criarMarcadoresLotes();
+                
+                if (!isMobile) {
+                    console.log('Desktop detectado, criando lista...');
+                    criarListaLotes();
+                }
+            }, 500);
+        });
     });
     
     // Fechar tooltip ao clicar fora (mobile)
@@ -109,54 +127,68 @@ window.addEventListener('DOMContentLoaded', function() {
 
 // Criar marcadores
 function criarMarcadoresLotes() {
-    lotes.forEach(lote => {
+    console.log('criarMarcadoresLotes chamado');
+    
+    lotes.forEach((lote, index) => {
+        console.log(`Criando marcador ${index + 1}/${lotes.length} - Lote ${lote.id}`);
+        
         const marker = document.createElement('div');
         marker.className = 'lote-marker';
         marker.innerHTML = lote.id;
         marker.dataset.loteId = lote.id;
+        marker.style.pointerEvents = 'auto';
+        marker.style.cursor = 'pointer';
         
-        if (isMobile) {
-            // MOBILE: Apenas clique = tooltip fixo
-            marker.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                // Se tooltip já está aberto, fechar
-                if (tooltipFixo) {
-                    esconderTooltip();
-                    tooltipFixo = false;
-                } else {
-                    // Abrir tooltip e fixar
-                    mostrarTooltipFixo(e, lote);
-                    tooltipFixo = true;
-                }
-            });
-        } else {
-            // DESKTOP: Hover + Clique
-            marker.addEventListener('mouseenter', function(e) {
-                if (!document.getElementById('sidebar').classList.contains('active')) {
-                    mostrarTooltip(e, lote);
-                }
-            });
-            
-            marker.addEventListener('mouseleave', function() {
-                esconderTooltip();
-            });
-            
-            marker.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('CLICOU NO MARCADOR:', lote.id);
-                selecionarLote(lote.id, marker);
-            });
-        }
-        
+        // Adicionar overlay PRIMEIRO
         viewer.addOverlay({
             element: marker,
             location: new OpenSeadragon.Point(lote.x, lote.y),
             placement: OpenSeadragon.Placement.CENTER,
             checkResize: false
         });
+        
+        // Aguardar o marcador estar no DOM antes de adicionar listeners
+        setTimeout(() => {
+            console.log(`Adicionando listeners ao marcador ${lote.id}`);
+            
+            if (isMobile) {
+                // MOBILE: Apenas clique = tooltip fixo
+                marker.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('MOBILE: Clique no marcador', lote.id);
+                    
+                    if (tooltipFixo) {
+                        esconderTooltip();
+                        tooltipFixo = false;
+                    } else {
+                        mostrarTooltipFixo(e, lote);
+                        tooltipFixo = true;
+                    }
+                });
+            } else {
+                // DESKTOP: Hover + Clique
+                marker.addEventListener('mouseenter', function(e) {
+                    if (!document.getElementById('sidebar').classList.contains('active')) {
+                        console.log('DESKTOP: Hover no marcador', lote.id);
+                        mostrarTooltip(e, lote);
+                    }
+                });
+                
+                marker.addEventListener('mouseleave', function() {
+                    esconderTooltip();
+                });
+                
+                marker.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('DESKTOP: CLIQUE NO MARCADOR', lote.id);
+                    selecionarLote(lote.id, this);
+                });
+                
+                console.log(`Listeners adicionados ao marcador ${lote.id}`);
+            }
+        }, 100 * (index + 1)); // Delay escalonado para cada marcador
     });
 }
 
@@ -186,7 +218,6 @@ function mostrarTooltipFixo(event, lote) {
         <small>Topografia: ${lote.topografia}</small>
     `;
     
-    // Posicionar no centro da tela
     const rect = event.target.getBoundingClientRect();
     tooltip.style.display = 'block';
     tooltip.style.left = (rect.left + rect.width / 2) + 'px';
@@ -202,6 +233,7 @@ function esconderTooltip() {
 
 // DESKTOP: Criar lista de lotes
 function criarListaLotes() {
+    console.log('criarListaLotes chamado');
     const content = document.getElementById('sidebar-content');
     
     content.innerHTML = lotes.map(lote => `
@@ -235,26 +267,29 @@ function criarListaLotes() {
     document.querySelectorAll('.lote-card').forEach(card => {
         card.addEventListener('click', function() {
             const loteId = this.dataset.loteId;
-            console.log('CLICOU NO CARD:', loteId);
+            console.log('CLIQUE NO CARD:', loteId);
             selecionarLoteDaLista(loteId);
         });
     });
+    
+    console.log('Lista de lotes criada com', lotes.length, 'cards');
 }
 
 // DESKTOP: Selecionar lote do mapa
 function selecionarLote(loteId, marker) {
-    console.log('selecionarLote chamado:', loteId);
+    console.log('>>> selecionarLote chamado:', loteId, marker);
     esconderTooltip();
     
     // Se clicar no mesmo, fechar
     if (currentSelectedLoteId === loteId) {
-        console.log('Fechando sidebar');
+        console.log('Mesmo lote, fechando sidebar');
         closeSidebar();
         return;
     }
     
     // Remover seleção anterior
     if (currentSelectedMarker) {
+        console.log('Removendo seleção anterior');
         currentSelectedMarker.classList.remove('selected');
     }
     
@@ -263,43 +298,53 @@ function selecionarLote(loteId, marker) {
     });
     
     // Nova seleção
+    console.log('Adicionando classe selected ao marcador');
     marker.classList.add('selected');
     currentSelectedMarker = marker;
     currentSelectedLoteId = loteId;
     
-    console.log('Marcador selecionado, abrindo sidebar');
-    
     // Selecionar card
     const card = document.querySelector(`.lote-card[data-lote-id="${loteId}"]`);
     if (card) {
+        console.log('Card encontrado, adicionando selected');
         card.classList.add('selected');
         card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else {
+        console.log('ERRO: Card não encontrado!');
     }
     
     // Abrir sidebar
-    document.getElementById('sidebar').classList.add('active');
-    console.log('Sidebar deve estar aberta agora');
+    const sidebar = document.getElementById('sidebar');
+    console.log('Abrindo sidebar...');
+    sidebar.classList.add('active');
+    console.log('Sidebar classes:', sidebar.classList.toString());
 }
 
 // DESKTOP: Selecionar lote da lista
 function selecionarLoteDaLista(loteId) {
-    console.log('selecionarLoteDaLista chamado:', loteId);
+    console.log('>>> selecionarLoteDaLista chamado:', loteId);
     const lote = lotes.find(l => l.id === loteId);
-    if (!lote) return;
+    if (!lote) {
+        console.log('ERRO: Lote não encontrado!');
+        return;
+    }
     
     const marker = document.querySelector(`.lote-marker[data-lote-id="${loteId}"]`);
     if (marker) {
+        console.log('Marcador encontrado, selecionando...');
         selecionarLote(loteId, marker);
         
         // Centralizar no mapa
         viewer.viewport.panTo(new OpenSeadragon.Point(lote.x, lote.y));
         viewer.viewport.zoomTo(4);
+    } else {
+        console.log('ERRO: Marcador não encontrado!');
     }
 }
 
 // Fechar sidebar
 function closeSidebar() {
-    console.log('closeSidebar chamado');
+    console.log('>>> closeSidebar chamado');
     document.getElementById('sidebar').classList.remove('active');
     
     if (currentSelectedMarker) {
