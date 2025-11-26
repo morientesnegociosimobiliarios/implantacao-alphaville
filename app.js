@@ -4,8 +4,8 @@ const lotes = [
         id: '08',
         quadra: 'AD',
         lote: '08',
-        x: 0.1452,  // pixel 1304 horizontal
-        y: 0.2643,  // pixel 1894 vertical
+        x: 0.1452,
+        y: 0.2643,
         area: '596,70',
         frente: '17,87',
         fundos: '22,00',
@@ -18,8 +18,8 @@ const lotes = [
         id: '03',
         quadra: 'P',
         lote: '03',
-        x: 0.3712,  // pixel 3333 horizontal
-        y: 0.4336,  // pixel 3107 vertical
+        x: 0.3712,
+        y: 0.4336,
         area: '523,68',
         frente: '16,13',
         fundos: '17,70',
@@ -32,8 +32,8 @@ const lotes = [
         id: '04',
         quadra: 'P',
         lote: '04',
-        x: 0.3676,  // pixel 3300 horizontal
-        y: 0.4407,  // pixel 3158 vertical
+        x: 0.3676,
+        y: 0.4407,
         area: '561,83',
         frente: '16,16',
         fundos: '20,21',
@@ -46,8 +46,8 @@ const lotes = [
         id: '06',
         quadra: 'J',
         lote: '06',
-        x: 0.4150,  // pixel 3726 horizontal
-        y: 0.5463,  // pixel 3915 vertical
+        x: 0.4150,
+        y: 0.5463,
         area: '471,19',
         frente: '15,19',
         fundos: '16,23',
@@ -60,10 +60,10 @@ const lotes = [
 
 let viewer;
 let currentSelectedMarker = null;
+let currentSelectedLoteId = null;
 
 // Inicialização
 window.addEventListener('DOMContentLoaded', function() {
-    // Detectar se é mobile
     const isMobile = window.innerWidth <= 768;
     
     viewer = OpenSeadragon({
@@ -73,36 +73,61 @@ window.addEventListener('DOMContentLoaded', function() {
             type: 'image',
             url: 'imagens/implantacao.png'
         },
-        showNavigator: !isMobile,  // Mini-mapa APENAS em desktop
+        showNavigator: !isMobile,
         navigatorPosition: "BOTTOM_RIGHT",
         navigatorAutoFade: false,
         showNavigationControl: false,
         gestureSettingsMouse: { clickToZoom: false },
         defaultZoomLevel: 2.2,
         minZoomLevel: 0.3,
-        maxZoomLevel: isMobile ? 10 : 5  // Mobile: 10x, Desktop: 5x
+        maxZoomLevel: isMobile ? 20 : 8
     });
     
     viewer.addHandler('open', function() {
         document.getElementById('loading').style.display = 'none';
         criarMarcadoresLotes();
+        
+        // Desktop: Criar lista de lotes
+        if (!isMobile) {
+            criarListaLotes();
+        }
     });
     
-    // Controles de zoom
     document.getElementById('zoom-in').onclick = () => viewer.viewport.zoomBy(1.5);
     document.getElementById('zoom-out').onclick = () => viewer.viewport.zoomBy(0.7);
     document.getElementById('zoom-home').onclick = () => viewer.viewport.goHome();
 });
 
-// Criar marcadores dos lotes
+// Criar marcadores
 function criarMarcadoresLotes() {
+    const isMobile = window.innerWidth <= 768;
+    
     lotes.forEach(lote => {
         const marker = document.createElement('div');
         marker.className = 'lote-marker';
         marker.innerHTML = lote.id;
-        marker.onmouseenter = (e) => mostrarTooltip(e, lote);
-        marker.onmouseleave = esconderTooltip;
-        marker.onclick = () => abrirSidebarLote(lote, marker);
+        marker.dataset.loteId = lote.id;
+        
+        if (isMobile) {
+            // Mobile: Tooltip + clique
+            marker.addEventListener('mouseenter', (e) => mostrarTooltip(e, lote));
+            marker.addEventListener('mouseleave', esconderTooltip);
+            marker.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                mostrarInfoMobile(lote);
+            });
+        } else {
+            // Desktop: Tooltip + clique abre sidebar
+            marker.addEventListener('mouseenter', (e) => mostrarTooltip(e, lote));
+            marker.addEventListener('mouseleave', esconderTooltip);
+            marker.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                selecionarLote(lote.id, marker);
+            });
+        }
+        
         viewer.addOverlay({
             element: marker,
             location: new OpenSeadragon.Point(lote.x, lote.y),
@@ -117,25 +142,14 @@ function mostrarTooltip(event, lote) {
     const tooltip = document.getElementById('tooltip');
     const sidebar = document.getElementById('sidebar');
     
-    // NÃO mostrar tooltip se sidebar está aberta
     if (sidebar.classList.contains('active')) {
         return;
     }
     
-    // Formatar valor
-    const valorFormatado = typeof lote.valor === 'string' ? 
-        lote.valor : 
-        lote.valor.toLocaleString('pt-BR');
-    
-    // Formatar área
-    const areaFormatada = typeof lote.area === 'string' ? 
-        lote.area : 
-        lote.area.toFixed(2).replace('.', ',');
-    
     tooltip.innerHTML = `
         <strong>Quadra ${lote.quadra} - Lote ${lote.lote}</strong><br>
-        <small>Área: ${areaFormatada} m²</small><br>
-        <small>Valor: R$ ${valorFormatado}</small><br>
+        <small>Área: ${lote.area} m²</small><br>
+        <small>Valor: R$ ${lote.valor}</small><br>
         <small>Topografia: ${lote.topografia}</small>
     `;
     tooltip.style.display = 'block';
@@ -147,13 +161,44 @@ function esconderTooltip() {
     document.getElementById('tooltip').style.display = 'none';
 }
 
-// Sidebar
-function abrirSidebarLote(lote, marker) {
-    // Esconder tooltip imediatamente
+// Desktop: Criar lista de lotes na sidebar
+function criarListaLotes() {
+    const content = document.getElementById('sidebar-content');
+    
+    content.innerHTML = lotes.map(lote => `
+        <div class="lote-card" data-lote-id="${lote.id}" onclick="selecionarLoteDaLista('${lote.id}')">
+            <div class="lote-card-header">
+                <div class="lote-card-title">Quadra ${lote.quadra} - Lote ${lote.lote}</div>
+                <div class="lote-card-id">${lote.id}</div>
+            </div>
+            <div class="lote-card-info">
+                <div class="lote-card-info-item">
+                    <span class="lote-card-info-label">Área</span>
+                    <span class="lote-card-info-value">${lote.area} m²</span>
+                </div>
+                <div class="lote-card-info-item">
+                    <span class="lote-card-info-label">Valor</span>
+                    <span class="lote-card-info-value">R$ ${lote.valor}</span>
+                </div>
+                <div class="lote-card-info-item">
+                    <span class="lote-card-info-label">Frente</span>
+                    <span class="lote-card-info-value">${lote.frente} m</span>
+                </div>
+                <div class="lote-card-info-item">
+                    <span class="lote-card-info-label">Topografia</span>
+                    <span class="lote-card-info-value">${lote.topografia}</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Desktop: Selecionar lote
+function selecionarLote(loteId, marker) {
     esconderTooltip();
     
-    // Se clicar no mesmo marcador já selecionado, fechar
-    if (currentSelectedMarker === marker) {
+    // Se clicar no mesmo, fechar
+    if (currentSelectedLoteId === loteId) {
         closeSidebar();
         return;
     }
@@ -163,57 +208,61 @@ function abrirSidebarLote(lote, marker) {
         currentSelectedMarker.classList.remove('selected');
     }
     
-    // Adicionar nova seleção
+    // Remover seleção anterior do card
+    document.querySelectorAll('.lote-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    // Nova seleção
     marker.classList.add('selected');
     currentSelectedMarker = marker;
+    currentSelectedLoteId = loteId;
     
-    document.getElementById('sidebar-title').textContent = `Quadra ${lote.quadra} - Lote ${lote.lote}`;
+    // Selecionar card na lista
+    const card = document.querySelector(`.lote-card[data-lote-id="${loteId}"]`);
+    if (card) {
+        card.classList.add('selected');
+        // Scroll suave até o card
+        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
     
-    // Tratar valores que já são strings formatadas
-    const valorFormatado = typeof lote.valor === 'string' ? lote.valor : lote.valor.toLocaleString('pt-BR');
-    const areaFormatada = typeof lote.area === 'string' ? lote.area : lote.area.toFixed(2).replace('.', ',');
-    const frenteFormatada = typeof lote.frente === 'string' ? lote.frente : lote.frente.toFixed(2).replace('.', ',');
-    const fundosFormatada = typeof lote.fundos === 'string' ? lote.fundos : lote.fundos.toFixed(2).replace('.', ',');
-    const profundidadeFormatada = typeof lote.profundidade === 'string' ? lote.profundidade : lote.profundidade.toFixed(2).replace('.', ',');
-    
-    document.getElementById('sidebar-content').innerHTML = `
-        <div class="info-group">
-            <div class="info-label">Identificação</div>
-            <div class="info-value">Quadra ${lote.quadra} - Lote ${lote.lote}</div>
-            <span class="status-badge">${lote.status}</span>
-        </div>
-        <div class="info-group">
-            <div class="info-label">Valor</div>
-            <div class="info-value">R$ ${valorFormatado}</div>
-        </div>
-        <div class="info-group">
-            <div class="info-label">Área Total</div>
-            <div class="info-value">${areaFormatada} m²</div>
-        </div>
-        <div class="info-group">
-            <div class="info-label">Frente</div>
-            <div class="info-value">${frenteFormatada} metros</div>
-        </div>
-        <div class="info-group">
-            <div class="info-label">Fundos</div>
-            <div class="info-value">${fundosFormatada} metros</div>
-        </div>
-        <div class="info-group">
-            <div class="info-label">Profundidade</div>
-            <div class="info-value">${profundidadeFormatada} metros</div>
-        </div>
-        <div class="info-group">
-            <div class="info-label">Topografia</div>
-            <div class="info-value">${lote.topografia}</div>
-        </div>
-    `;
+    // Abrir sidebar
     document.getElementById('sidebar').classList.add('active');
 }
 
+// Desktop: Selecionar lote da lista
+function selecionarLoteDaLista(loteId) {
+    const lote = lotes.find(l => l.id === loteId);
+    if (!lote) return;
+    
+    // Encontrar marcador
+    const marker = document.querySelector(`.lote-marker[data-lote-id="${loteId}"]`);
+    if (marker) {
+        selecionarLote(loteId, marker);
+        
+        // Centralizar no mapa
+        viewer.viewport.panTo(new OpenSeadragon.Point(lote.x, lote.y));
+        viewer.viewport.zoomTo(4);
+    }
+}
+
+// Mobile: Mostrar info
+function mostrarInfoMobile(lote) {
+    alert(`Quadra ${lote.quadra} - Lote ${lote.lote}\n\nÁrea: ${lote.area} m²\nValor: R$ ${lote.valor}\nTopografia: ${lote.topografia}`);
+}
+
+// Fechar sidebar
 function closeSidebar() {
     document.getElementById('sidebar').classList.remove('active');
+    
     if (currentSelectedMarker) {
         currentSelectedMarker.classList.remove('selected');
         currentSelectedMarker = null;
     }
+    
+    document.querySelectorAll('.lote-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    currentSelectedLoteId = null;
 }
