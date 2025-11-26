@@ -3,48 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizador de Loteamento</title>
+    <title>Visualizador de Implantação - Lotes</title>
     
-    <!-- OpenSeadragon via CDN -->
+    <!-- OpenSeadragon CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/openseadragon.min.js"></script>
     
     <!-- CSS -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <!-- Header -->
-    <header>
-        <!-- Corrigindo o caminho do logo -->
+    <div class="header">
         <img src="imagens/logo.webp" alt="Logo" class="logo">
-        <h1 class="header-title">Visualizador de Loteamento</h1>
-    </header>
-
-    <!-- Visualizador OpenSeadragon -->
-    <div id="viewer"></div>
-
-    <!-- Controles -->
-    <div class="controls">
-        <button class="control-btn" id="zoomInBtn" title="Zoom In">+</button>
-        <button class="control-btn" id="zoomOutBtn" title="Zoom Out">−</button>
-        <button class="control-btn" id="homeBtn" title="Reset">⌂</button>
+        <div class="header-title">Implantação</div>
     </div>
 
-    <!-- Popup de informações -->
-    <div class="popup-overlay" id="popupOverlay">
-        <div class="popup-content">
-            <div class="popup-header">
-                <h2 class="popup-title" id="popupTitle">Lote #</h2>
-                <button class="close-btn" id="closeBtn">×</button>
-            </div>
-            <div class="info-grid" id="popupInfo">
-                <!-- As informações serão inseridas aqui -->
-            </div>
+    <!-- Visualizador -->
+    <div id="openseadragon-viewer"></div>
+
+    <!-- Tooltip -->
+    <div class="lote-tooltip" id="tooltip"></div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title" id="sidebar-title">Lote</div>
+            <button class="close-btn" onclick="closeSidebar()">×</button>
+        </div>
+        <div class="sidebar-content" id="sidebar-content"></div>
+    </div>
+
+    <!-- Controles de zoom -->
+    <div class="zoom-controls">
+        <button class="zoom-btn" id="zoom-in">+</button>
+        <button class="zoom-btn" id="zoom-out">−</button>
+        <button class="zoom-btn" id="zoom-home">⌂</button>
+    </div>
+
+    <!-- Legenda -->
+    <div class="legend">
+        <div class="legend-title">Legenda</div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: linear-gradient(135deg, #3b82f6, #2563eb);"></div>
+            <span>Lote Disponível</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: linear-gradient(135deg, #10b981, #059669);"></div>
+            <span>Lote Selecionado</span>
         </div>
     </div>
 
-    <!-- JavaScript -->
-    <script src="script.js"></script>
+    <!-- Loading -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div>Carregando...</div>
+    </div>
 
+    <!-- JavaScript -->
+    <script src="app.js"></script>
 </body>
 </html>
