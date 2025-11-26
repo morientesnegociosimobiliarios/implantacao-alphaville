@@ -58,7 +58,8 @@ const lotes = [
     }
 ];
 
-let viewer, currentSelectedMarker = null;
+let viewer;
+let currentSelectedMarker = null;
 
 // Inicialização
 window.addEventListener('DOMContentLoaded', function() {
@@ -79,25 +80,18 @@ window.addEventListener('DOMContentLoaded', function() {
         gestureSettingsMouse: { clickToZoom: false },
         defaultZoomLevel: 2.2,
         minZoomLevel: 0.3,
-        maxZoomLevel: 5
+        maxZoomLevel: isMobile ? 10 : 5  // Mobile: 10x, Desktop: 5x
     });
     
     viewer.addHandler('open', function() {
         document.getElementById('loading').style.display = 'none';
-        
-        // Aplicar zoom inicial
-        viewer.viewport.zoomTo(2.2);
-        viewer.viewport.applyConstraints();
-        
-        setTimeout(() => criarMarcadoresLotes(), 500);
+        criarMarcadoresLotes();
     });
     
+    // Controles de zoom
     document.getElementById('zoom-in').onclick = () => viewer.viewport.zoomBy(1.5);
     document.getElementById('zoom-out').onclick = () => viewer.viewport.zoomBy(0.7);
-    document.getElementById('zoom-home').onclick = () => {
-        viewer.viewport.zoomTo(2.2);
-        viewer.viewport.goHome();
-    };
+    document.getElementById('zoom-home').onclick = () => viewer.viewport.goHome();
 });
 
 // Criar marcadores dos lotes
@@ -121,6 +115,12 @@ function criarMarcadoresLotes() {
 // Tooltip
 function mostrarTooltip(event, lote) {
     const tooltip = document.getElementById('tooltip');
+    const sidebar = document.getElementById('sidebar');
+    
+    // NÃO mostrar tooltip se sidebar está aberta
+    if (sidebar.classList.contains('active')) {
+        return;
+    }
     
     // Formatar valor
     const valorFormatado = typeof lote.valor === 'string' ? 
@@ -149,6 +149,9 @@ function esconderTooltip() {
 
 // Sidebar
 function abrirSidebarLote(lote, marker) {
+    // Esconder tooltip imediatamente
+    esconderTooltip();
+    
     // Se clicar no mesmo marcador já selecionado, fechar
     if (currentSelectedMarker === marker) {
         closeSidebar();
