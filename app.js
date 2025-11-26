@@ -61,11 +61,11 @@ const lotes = [
 let viewer;
 let currentSelectedMarker = null;
 let currentSelectedLoteId = null;
+let tooltipFixo = false;
+const isMobile = window.innerWidth <= 768;
 
 // Inicialização
 window.addEventListener('DOMContentLoaded', function() {
-    const isMobile = window.innerWidth <= 768;
-    
     viewer = OpenSeadragon({
         id: "openseadragon-viewer",
         prefixUrl: "https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/images/",
@@ -87,11 +87,20 @@ window.addEventListener('DOMContentLoaded', function() {
         document.getElementById('loading').style.display = 'none';
         criarMarcadoresLotes();
         
-        // Desktop: Criar lista de lotes
         if (!isMobile) {
             criarListaLotes();
         }
     });
+    
+    // Fechar tooltip ao clicar fora (mobile)
+    if (isMobile) {
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.lote-marker') && !e.target.closest('.lote-tooltip')) {
+                esconderTooltip();
+                tooltipFixo = false;
+            }
+        });
+    }
     
     document.getElementById('zoom-in').onclick = () => viewer.viewport.zoomBy(1.5);
     document.getElementById('zoom-out').onclick = () => viewer.viewport.zoomBy(0.7);
@@ -100,8 +109,6 @@ window.addEventListener('DOMContentLoaded', function() {
 
 // Criar marcadores
 function criarMarcadoresLotes() {
-    const isMobile = window.innerWidth <= 768;
-    
     lotes.forEach(lote => {
         const marker = document.createElement('div');
         marker.className = 'lote-marker';
@@ -109,21 +116,37 @@ function criarMarcadoresLotes() {
         marker.dataset.loteId = lote.id;
         
         if (isMobile) {
-            // Mobile: Tooltip + clique
-            marker.addEventListener('mouseenter', (e) => mostrarTooltip(e, lote));
-            marker.addEventListener('mouseleave', esconderTooltip);
-            marker.addEventListener('click', (e) => {
+            // MOBILE: Apenas clique = tooltip fixo
+            marker.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                mostrarInfoMobile(lote);
+                
+                // Se tooltip já está aberto, fechar
+                if (tooltipFixo) {
+                    esconderTooltip();
+                    tooltipFixo = false;
+                } else {
+                    // Abrir tooltip e fixar
+                    mostrarTooltipFixo(e, lote);
+                    tooltipFixo = true;
+                }
             });
         } else {
-            // Desktop: Tooltip + clique abre sidebar
-            marker.addEventListener('mouseenter', (e) => mostrarTooltip(e, lote));
-            marker.addEventListener('mouseleave', esconderTooltip);
-            marker.addEventListener('click', (e) => {
+            // DESKTOP: Hover + Clique
+            marker.addEventListener('mouseenter', function(e) {
+                if (!document.getElementById('sidebar').classList.contains('active')) {
+                    mostrarTooltip(e, lote);
+                }
+            });
+            
+            marker.addEventListener('mouseleave', function() {
+                esconderTooltip();
+            });
+            
+            marker.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
+                console.log('CLICOU NO MARCADOR:', lote.id);
                 selecionarLote(lote.id, marker);
             });
         }
@@ -137,14 +160,9 @@ function criarMarcadoresLotes() {
     });
 }
 
-// Tooltip
+// Tooltip hover (desktop)
 function mostrarTooltip(event, lote) {
     const tooltip = document.getElementById('tooltip');
-    const sidebar = document.getElementById('sidebar');
-    
-    if (sidebar.classList.contains('active')) {
-        return;
-    }
     
     tooltip.innerHTML = `
         <strong>Quadra ${lote.quadra} - Lote ${lote.lote}</strong><br>
@@ -157,16 +175,37 @@ function mostrarTooltip(event, lote) {
     tooltip.style.top = (event.pageY + 15) + 'px';
 }
 
-function esconderTooltip() {
-    document.getElementById('tooltip').style.display = 'none';
+// Tooltip fixo (mobile)
+function mostrarTooltipFixo(event, lote) {
+    const tooltip = document.getElementById('tooltip');
+    
+    tooltip.innerHTML = `
+        <strong>Quadra ${lote.quadra} - Lote ${lote.lote}</strong><br>
+        <small>Área: ${lote.area} m²</small><br>
+        <small>Valor: R$ ${lote.valor}</small><br>
+        <small>Topografia: ${lote.topografia}</small>
+    `;
+    
+    // Posicionar no centro da tela
+    const rect = event.target.getBoundingClientRect();
+    tooltip.style.display = 'block';
+    tooltip.style.left = (rect.left + rect.width / 2) + 'px';
+    tooltip.style.top = (rect.top - 80) + 'px';
+    tooltip.style.transform = 'translateX(-50%)';
 }
 
-// Desktop: Criar lista de lotes na sidebar
+function esconderTooltip() {
+    const tooltip = document.getElementById('tooltip');
+    tooltip.style.display = 'none';
+    tooltip.style.transform = '';
+}
+
+// DESKTOP: Criar lista de lotes
 function criarListaLotes() {
     const content = document.getElementById('sidebar-content');
     
     content.innerHTML = lotes.map(lote => `
-        <div class="lote-card" data-lote-id="${lote.id}" onclick="selecionarLoteDaLista('${lote.id}')">
+        <div class="lote-card" data-lote-id="${lote.id}">
             <div class="lote-card-header">
                 <div class="lote-card-title">Quadra ${lote.quadra} - Lote ${lote.lote}</div>
                 <div class="lote-card-id">${lote.id}</div>
@@ -191,14 +230,25 @@ function criarListaLotes() {
             </div>
         </div>
     `).join('');
+    
+    // Adicionar event listener em cada card
+    document.querySelectorAll('.lote-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const loteId = this.dataset.loteId;
+            console.log('CLICOU NO CARD:', loteId);
+            selecionarLoteDaLista(loteId);
+        });
+    });
 }
 
-// Desktop: Selecionar lote
+// DESKTOP: Selecionar lote do mapa
 function selecionarLote(loteId, marker) {
+    console.log('selecionarLote chamado:', loteId);
     esconderTooltip();
     
     // Se clicar no mesmo, fechar
     if (currentSelectedLoteId === loteId) {
+        console.log('Fechando sidebar');
         closeSidebar();
         return;
     }
@@ -208,7 +258,6 @@ function selecionarLote(loteId, marker) {
         currentSelectedMarker.classList.remove('selected');
     }
     
-    // Remover seleção anterior do card
     document.querySelectorAll('.lote-card').forEach(card => {
         card.classList.remove('selected');
     });
@@ -218,24 +267,26 @@ function selecionarLote(loteId, marker) {
     currentSelectedMarker = marker;
     currentSelectedLoteId = loteId;
     
-    // Selecionar card na lista
+    console.log('Marcador selecionado, abrindo sidebar');
+    
+    // Selecionar card
     const card = document.querySelector(`.lote-card[data-lote-id="${loteId}"]`);
     if (card) {
         card.classList.add('selected');
-        // Scroll suave até o card
         card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
     
     // Abrir sidebar
     document.getElementById('sidebar').classList.add('active');
+    console.log('Sidebar deve estar aberta agora');
 }
 
-// Desktop: Selecionar lote da lista
+// DESKTOP: Selecionar lote da lista
 function selecionarLoteDaLista(loteId) {
+    console.log('selecionarLoteDaLista chamado:', loteId);
     const lote = lotes.find(l => l.id === loteId);
     if (!lote) return;
     
-    // Encontrar marcador
     const marker = document.querySelector(`.lote-marker[data-lote-id="${loteId}"]`);
     if (marker) {
         selecionarLote(loteId, marker);
@@ -246,13 +297,9 @@ function selecionarLoteDaLista(loteId) {
     }
 }
 
-// Mobile: Mostrar info
-function mostrarInfoMobile(lote) {
-    alert(`Quadra ${lote.quadra} - Lote ${lote.lote}\n\nÁrea: ${lote.area} m²\nValor: R$ ${lote.valor}\nTopografia: ${lote.topografia}`);
-}
-
 // Fechar sidebar
 function closeSidebar() {
+    console.log('closeSidebar chamado');
     document.getElementById('sidebar').classList.remove('active');
     
     if (currentSelectedMarker) {
