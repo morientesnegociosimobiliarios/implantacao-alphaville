@@ -478,15 +478,23 @@ body {
     100% { transform: rotate(360deg); }
 }
 
-/* Esconder mini mapa em mobile */
+/* Responsivo Mobile */
 @media (max-width: 768px) {
+    /* Esconder mini mapa completamente */
     .openseadragon-navigator {
         display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
     }
-}
-
-/* Responsivo */
-@media (max-width: 768px) {
+    
+    /* Forçar ocultação em qualquer seletor */
+    #openseadragon-viewer .openseadragon-navigator,
+    #openseadragon-viewer > .openseadragon-navigator,
+    .openseadragon-container .openseadragon-navigator {
+        display: none !important;
+    }
+    
     .sidebar {
         width: 100%;
         right: -100%;
@@ -507,5 +515,30 @@ body {
     
     .legend {
         display: none;
+    }
+    
+    /* Botões de zoom - layout horizontal compacto */
+    .zoom-controls {
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        flex-direction: row;
+        gap: 8px;
+        background: rgba(20, 20, 20, 0.9);
+        padding: 8px 12px;
+        border-radius: 25px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .zoom-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 18px;
+        border-radius: 50%;
+    }
+    
+    .zoom-btn:active {
+        transform: scale(0.95);
     }
 }
