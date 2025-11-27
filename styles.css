@@ -48,6 +48,7 @@ body {
     right: 0;
     bottom: 0;
     background-color: #2a2a2a;
+    transition: width 0.3s ease;
 }
 
 /* Marcadores dos lotes */
@@ -495,9 +496,113 @@ body {
         display: none !important;
     }
     
+    /* Sidebar mobile: 40% da tela sempre visível */
     .sidebar {
-        width: 100%;
-        right: -100%;
+        width: 40%;
+        right: 0;
+        top: 60px;
+        height: calc(100vh - 60px);
+        box-shadow: -2px 0 15px rgba(0, 0, 0, 0.5);
+        transform: none;
+        transition: none;
+    }
+    
+    /* Ocultar botão fechar no mobile */
+    .close-btn {
+        display: none;
+    }
+    
+    /* Viewer ocupa 60% no mobile */
+    #openseadragon-viewer {
+        top: 60px;
+        right: 40%;
+        width: 60%;
+    }
+    
+    /* Conteúdo da sidebar com scroll */
+    .sidebar-content {
+        padding: 10px;
+        max-height: calc(100vh - 180px);
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    
+    /* Scrollbar customizada */
+    .sidebar-content::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .sidebar-content::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 3px;
+    }
+    
+    .sidebar-content::-webkit-scrollbar-thumb {
+        background: rgba(59, 130, 246, 0.5);
+        border-radius: 3px;
+    }
+    
+    .sidebar-content::-webkit-scrollbar-thumb:hover {
+        background: rgba(59, 130, 246, 0.8);
+    }
+    
+    /* Cards menores e compactos no mobile */
+    .lote-card {
+        padding: 10px;
+        margin-bottom: 8px;
+        font-size: 12px;
+    }
+    
+    .lote-card-header {
+        margin-bottom: 8px;
+    }
+    
+    .lote-card-title {
+        font-size: 13px;
+    }
+    
+    .lote-card-info {
+        grid-template-columns: 1fr;
+        gap: 6px;
+        font-size: 11px;
+    }
+    
+    .lote-card-id {
+        width: 24px;
+        height: 24px;
+        font-size: 10px;
+    }
+    
+    .lote-card-info-label {
+        font-size: 9px;
+    }
+    
+    .lote-card-info-value {
+        font-size: 11px;
+    }
+    
+    /* Header da sidebar menor */
+    .sidebar-header {
+        padding: 12px;
+    }
+    
+    .sidebar-title {
+        font-size: 14px;
+    }
+    
+    /* Legenda da sidebar menor */
+    .sidebar-legend {
+        padding: 12px;
+    }
+    
+    .legend-item-sidebar {
+        font-size: 11px;
+        margin-bottom: 8px;
+    }
+    
+    .legend-color-sidebar {
+        width: 16px;
+        height: 16px;
     }
     
     .header {
