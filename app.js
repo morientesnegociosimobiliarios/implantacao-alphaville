@@ -270,14 +270,8 @@ function selecionarLote(loteId, marker) {
     console.log('Selecionando lote:', loteId);
     
     const sidebar = document.getElementById('sidebar');
+    const viewerEl = document.getElementById('openseadragon-viewer');
     const isMobile = isMobileDevice();
-    
-    // Desktop: permite fechar sidebar clicando no mesmo lote
-    // Mobile: sidebar fica sempre aberta, apenas muda seleção
-    if (!isMobile && currentSelectedLoteId === loteId && sidebar.classList.contains('active')) {
-        closeSidebar();
-        return;
-    }
     
     if (currentSelectedMarker) {
         currentSelectedMarker.classList.remove('selected');
@@ -299,7 +293,20 @@ function selecionarLote(loteId, marker) {
         }, isMobile ? 100 : 350);
     }
     
+    // Abrir sidebar
     sidebar.classList.add('active');
+    
+    // No mobile, ajustar viewer
+    if (isMobile) {
+        viewerEl.style.width = '60%';
+        viewerEl.style.right = '40%';
+        
+        const btnDisp = document.getElementById('btn-disponibilidade');
+        if (btnDisp) {
+            btnDisp.textContent = 'FECHAR';
+        }
+    }
+    
     console.log('Lote selecionado:', loteId);
 }
 
@@ -332,24 +339,37 @@ function selecionarLoteDaLista(loteId) {
     viewer.viewport.zoomTo(4, null, true);
 }
 
-// Fechar sidebar
+// Fechar sidebar (apenas mobile)
 function closeSidebar() {
     const sidebar = document.getElementById('sidebar');
     const viewerEl = document.getElementById('openseadragon-viewer');
     const isMobile = isMobileDevice();
     
-    sidebar.classList.remove('active');
-    
-    // No mobile, restaurar viewer para 100%
-    if (isMobile) {
-        viewerEl.style.width = '100%';
-        viewerEl.style.right = '0';
-        
-        // Atualizar texto do botão
-        const btnDisp = document.getElementById('btn-disponibilidade');
-        if (btnDisp) {
-            btnDisp.textContent = 'ABRIR DISPONIBILIDADE';
+    // Desktop: sidebar sempre aberta, não faz nada
+    if (!isMobile) {
+        // Apenas desselecionar o lote
+        if (currentSelectedMarker) {
+            currentSelectedMarker.classList.remove('selected');
+            currentSelectedMarker = null;
         }
+        
+        document.querySelectorAll('.lote-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+        
+        currentSelectedLoteId = null;
+        return;
+    }
+    
+    // Mobile: fechar sidebar
+    sidebar.classList.remove('active');
+    viewerEl.style.width = '100%';
+    viewerEl.style.right = '0';
+    
+    // Atualizar texto do botão
+    const btnDisp = document.getElementById('btn-disponibilidade');
+    if (btnDisp) {
+        btnDisp.textContent = 'ABRIR DISPONIBILIDADE';
     }
     
     if (currentSelectedMarker) {
