@@ -90,7 +90,7 @@ window.addEventListener('DOMContentLoaded', function() {
             clickToZoom: false,
             flickEnabled: true
         },
-        defaultZoomLevel: 2.2,
+        defaultZoomLevel: isMobile ? 3.3 : 2.2,
         minZoomLevel: 0.3,
         maxZoomLevel: isMobile ? 20 : 8
     });
@@ -335,7 +335,22 @@ function selecionarLoteDaLista(loteId) {
 // Fechar sidebar
 function closeSidebar() {
     const sidebar = document.getElementById('sidebar');
+    const viewerEl = document.getElementById('openseadragon-viewer');
+    const isMobile = isMobileDevice();
+    
     sidebar.classList.remove('active');
+    
+    // No mobile, restaurar viewer para 100%
+    if (isMobile) {
+        viewerEl.style.width = '100%';
+        viewerEl.style.right = '0';
+        
+        // Atualizar texto do botão
+        const btnDisp = document.getElementById('btn-disponibilidade');
+        if (btnDisp) {
+            btnDisp.textContent = 'ABRIR DISPONIBILIDADE';
+        }
+    }
     
     if (currentSelectedMarker) {
         currentSelectedMarker.classList.remove('selected');
@@ -347,4 +362,25 @@ function closeSidebar() {
     });
     
     currentSelectedLoteId = null;
+}
+
+// Toggle sidebar no mobile
+function toggleSidebarMobile() {
+    const sidebar = document.getElementById('sidebar');
+    const viewerEl = document.getElementById('openseadragon-viewer');
+    const btnDisp = document.getElementById('btn-disponibilidade');
+    
+    if (sidebar.classList.contains('active')) {
+        // Fechar
+        sidebar.classList.remove('active');
+        viewerEl.style.width = '100%';
+        viewerEl.style.right = '0';
+        btnDisp.textContent = 'ABRIR DISPONIBILIDADE';
+    } else {
+        // Abrir
+        sidebar.classList.add('active');
+        viewerEl.style.width = '60%';
+        viewerEl.style.right = '40%';
+        btnDisp.textContent = 'FECHAR';
+    }
 }
