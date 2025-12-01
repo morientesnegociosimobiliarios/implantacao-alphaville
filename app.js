@@ -55,6 +55,216 @@ const lotes = [
         topografia: 'Plano',
         valor: '980.000,00',
         status: 'Disponível'
+    },
+    {
+        id: '18',
+        quadra: 'Q',
+        lote: '18',
+        x: 0.3301,
+        y: 0.3856,
+        area: '480,45',
+        frente: '15,64',
+        fundos: '16,40',
+        profundidade: '30,00',
+        topografia: 'Declive',
+        valor: '880.000,00',
+        status: 'Disponível'
+    },
+    {
+        id: '21',
+        quadra: 'Q',
+        lote: '21',
+        x: 0.3397,
+        y: 0.3645,
+        area: '0,00',
+        frente: '0,00',
+        fundos: '0,00',
+        profundidade: '0,00',
+        topografia: 'Plano',
+        valor: '0,00',
+        status: 'Disponível'
+    },
+    {
+        id: '25',
+        quadra: 'R',
+        lote: '25',
+        x: 0.3184,
+        y: 0.3149,
+        area: '573,68',
+        frente: '20,20',
+        fundos: '20,01',
+        profundidade: '30,00',
+        topografia: 'Plano',
+        valor: '926.000,00',
+        status: 'Disponível'
+    },
+    {
+        id: '22',
+        quadra: 'S',
+        lote: '22',
+        x: 0.3445,
+        y: 0.2417,
+        area: '536,97',
+        frente: '22,29',
+        fundos: '13,51',
+        profundidade: '30,00',
+        topografia: 'Declive',
+        valor: '1.310.000,00',
+        status: 'Disponível'
+    },
+    {
+        id: '04',
+        quadra: 'U',
+        lote: '04',
+        x: 0.3043,
+        y: 0.3133,
+        area: '480,06',
+        frente: '16,76',
+        fundos: '15,23',
+        profundidade: '30,00',
+        topografia: 'Aclive',
+        valor: '880.000,00',
+        status: 'Disponível'
+    },
+    {
+        id: '06',
+        quadra: 'U',
+        lote: '06',
+        x: 0.2991,
+        y: 0.3315,
+        area: '455,63',
+        frente: '15,62',
+        fundos: '14,74',
+        profundidade: '30,00',
+        topografia: 'Declive',
+        valor: '820.134,00',
+        status: 'Disponível'
+    },
+    {
+        id: '25',
+        quadra: 'U',
+        lote: '25',
+        x: 0.2800,
+        y: 0.3180,
+        area: '527,27',
+        frente: '17,19',
+        fundos: '18,00',
+        profundidade: '30,00',
+        topografia: 'Declive',
+        valor: '900.000,00',
+        status: 'Disponível'
+    },
+    {
+        id: '04',
+        quadra: 'V',
+        lote: '04',
+        x: 0.2337,
+        y: 0.0759,
+        area: '574,88',
+        frente: '15,93',
+        fundos: '22,39',
+        profundidade: '30,00',
+        topografia: 'Plano',
+        valor: '990.000,00',
+        status: 'Disponível'
+    },
+    {
+        id: '07',
+        quadra: 'W',
+        lote: '07',
+        x: 0.2542,
+        y: 0.1330,
+        area: '456,00',
+        frente: '15,20',
+        fundos: '15,20',
+        profundidade: '30,00',
+        topografia: 'Aclive',
+        valor: '784.320,00',
+        status: 'Disponível'
+    },
+    {
+        id: '16',
+        quadra: 'W',
+        lote: '16',
+        x: 0.2732,
+        y: 0.2025,
+        area: '459,76',
+        frente: '15,84',
+        fundos: '14,80',
+        profundidade: '30,00',
+        topografia: 'Aclive',
+        valor: '750.000,00',
+        status: 'Disponível'
+    },
+    {
+        id: '17',
+        quadra: 'W',
+        lote: '17',
+        x: 0.2743,
+        y: 0.2098,
+        area: '459,69',
+        frente: '15,84',
+        fundos: '14,80',
+        profundidade: '30,00',
+        topografia: 'Aclive',
+        valor: '750.000,00',
+        status: 'Disponível'
+    },
+    {
+        id: '05',
+        quadra: 'Y',
+        lote: '05',
+        x: 0.2521,
+        y: 0.4014,
+        area: '664,90',
+        frente: '14,65',
+        fundos: '15,82',
+        profundidade: '43,02',
+        topografia: 'Declive',
+        valor: '915.000,00',
+        status: 'Disponível'
+    },
+    {
+        id: '08',
+        quadra: 'Y',
+        lote: '08',
+        x: 0.2339,
+        y: 0.3901,
+        area: '586,03',
+        frente: '14,65',
+        fundos: '14,63',
+        profundidade: '40,57',
+        topografia: 'Declive',
+        valor: '810.000,00',
+        status: 'Disponível'
+    },
+    {
+        id: '18',
+        quadra: 'Y',
+        lote: '18',
+        x: 0.1751,
+        y: 0.3382,
+        area: '668,02',
+        frente: '14,38',
+        fundos: '18,41',
+        profundidade: '40,72',
+        topografia: 'Declive',
+        valor: '940.000,00',
+        status: 'Disponível'
+    },
+    {
+        id: '40',
+        quadra: 'Y',
+        lote: '40',
+        x: 0.1906,
+        y: 0.3947,
+        area: '721,91',
+        frente: '19,33',
+        fundos: '19,33',
+        profundidade: '37,14',
+        topografia: 'Aclive',
+        valor: '1.166.000,00',
+        status: 'Disponível'
     }
 ];
 
@@ -90,7 +300,7 @@ window.addEventListener('DOMContentLoaded', function() {
             clickToZoom: false,
             flickEnabled: true
         },
-        defaultZoomLevel: isMobile ? 3.3 : 2.2,
+        defaultZoomLevel: isMobile ? 3.8 : 2.53,
         minZoomLevel: 0.3,
         maxZoomLevel: isMobile ? 20 : 8
     });
@@ -98,6 +308,10 @@ window.addEventListener('DOMContentLoaded', function() {
     viewer.addHandler('open', function() {
         console.log('Viewer aberto!');
         document.getElementById('loading').style.display = 'none';
+        
+        // Definir posição inicial específica
+        viewer.viewport.panTo(new OpenSeadragon.Point(0.2747, 0.3065), false);
+        viewer.viewport.zoomTo(isMobile ? 3.8 : 2.53, null, false);
         
         setTimeout(() => {
             criarMarcadoresLotes();
