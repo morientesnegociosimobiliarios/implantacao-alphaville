@@ -89,7 +89,8 @@ body {
     pointer-events: auto;
     z-index: 100;
     position: relative;
-    padding-top: 1px;
+    text-align: center;
+    line-height: 27px;
 }
 
 .lote-marker:hover {
@@ -436,26 +437,9 @@ body {
     box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
 }
 
-/* Legenda */
+/* Legenda - OCULTA (duplicada na sidebar) */
 .legend {
-    position: fixed;
-    top: 90px;
-    right: 20px;
-    background: rgba(30, 30, 30, 0.95);
-    backdrop-filter: blur(10px);
-    padding: 18px 22px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    z-index: 1000;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    transition: opacity 0.3s, visibility 0.3s;
-}
-
-/* Esconder legenda quando sidebar aberta */
-.sidebar.active ~ .legend {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
+    display: none;
 }
 
 .legend-title {
@@ -658,10 +642,6 @@ body {
     .btn-disponibilidade {
         font-size: 10px;
         padding: 8px 12px;
-    }
-    
-    .legend {
-        display: none;
     }
     
     /* Botões de zoom - SEMPRE NO CANTO ESQUERDO TAMBÉM NO MOBILE */
