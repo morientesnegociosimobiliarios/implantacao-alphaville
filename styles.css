@@ -84,15 +84,12 @@ body {
     color: white;
     font-weight: bold;
     font-size: 14px;
-    line-height: 1;
     box-shadow: 0 4px 15px rgba(16, 185, 129, 0.5);
     transition: all 0.3s ease;
-    text-align: center;
-    padding: 0;
-    margin: 0;
     pointer-events: auto;
     z-index: 100;
     position: relative;
+    padding-top: 1px;
 }
 
 .lote-marker:hover {
@@ -154,11 +151,11 @@ body {
     margin-bottom: 3px;
 }
 
-/* Sidebar */
+/* Sidebar - Desktop sempre aberta */
 .sidebar {
     position: fixed;
     top: 0;
-    right: -400px;
+    right: 0;
     width: 400px;
     height: 100vh;
     background: rgba(15, 15, 15, 0.98);
@@ -200,7 +197,7 @@ body {
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.3s;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     line-height: 1;
