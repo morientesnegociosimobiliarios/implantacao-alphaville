@@ -32,6 +32,33 @@ body {
     width: auto;
 }
 
+/* Botão Disponibilidade (apenas mobile) */
+.btn-disponibilidade {
+    display: none;
+    margin-left: auto;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.btn-disponibilidade:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+}
+
+.btn-disponibilidade:active {
+    transform: translateY(0);
+}
+
 /* Visualizador OpenSeadragon */
 #openseadragon-viewer {
     position: fixed;
@@ -56,8 +83,8 @@ body {
     justify-content: center;
     color: white;
     font-weight: bold;
-    font-size: 11px;
-    line-height: 27px;
+    font-size: 14px;
+    line-height: 1;
     box-shadow: 0 4px 15px rgba(16, 185, 129, 0.5);
     transition: all 0.3s ease;
     text-align: center;
@@ -80,6 +107,21 @@ body {
     border-color: #fbbf24;
     box-shadow: 0 6px 25px rgba(59, 130, 246, 0.7);
     z-index: 150;
+    animation: pulse-border 1.5s ease-in-out infinite;
+}
+
+/* Animação de borda pulsante para marcador selecionado */
+@keyframes pulse-border {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7),
+                    0 6px 25px rgba(59, 130, 246, 0.7);
+        border-width: 2px;
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(251, 191, 36, 0),
+                    0 6px 25px rgba(59, 130, 246, 0.7);
+        border-width: 3px;
+    }
 }
 
 /* Tooltip */
@@ -487,27 +529,37 @@ body {
 
 /* Responsivo Mobile */
 @media (max-width: 768px) {
-    /* Sidebar mobile: 40% da tela sempre visível */
+    /* Mostrar botão disponibilidade no mobile */
+    .btn-disponibilidade {
+        display: block;
+    }
+    
+    /* Sidebar mobile: inicia FECHADA (fora da tela) */
     .sidebar {
         width: 40%;
-        right: 0;
+        right: -40%;
         top: 60px;
         height: calc(100vh - 60px);
         box-shadow: -2px 0 15px rgba(0, 0, 0, 0.5);
-        transform: none;
-        transition: none;
+        transition: right 0.3s ease;
     }
     
-    /* Ocultar botão fechar no mobile */
+    /* Sidebar aberta no mobile */
+    .sidebar.active {
+        right: 0;
+    }
+    
+    /* Mostrar botão fechar no mobile quando sidebar aberta */
     .close-btn {
-        display: none;
+        display: flex;
     }
     
-    /* Viewer ocupa 60% no mobile */
+    /* Viewer ocupa 100% inicialmente no mobile */
     #openseadragon-viewer {
         top: 60px;
-        right: 40%;
-        width: 60%;
+        right: 0;
+        width: 100%;
+        transition: all 0.3s ease;
     }
     
     /* Conteúdo da sidebar com scroll */
@@ -599,10 +651,16 @@ body {
     .header {
         height: 60px;
         padding: 0 15px;
+        justify-content: space-between;
     }
     
     .logo {
         height: 35px;
+    }
+    
+    .btn-disponibilidade {
+        font-size: 10px;
+        padding: 8px 12px;
     }
     
     .legend {
