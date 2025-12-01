@@ -84,9 +84,7 @@ window.addEventListener('DOMContentLoaded', function() {
             type: 'image',
             url: 'imagens/implantacao.png'
         },
-        showNavigator: !isMobile,
-        navigatorPosition: "BOTTOM_RIGHT",
-        navigatorAutoFade: false,
+        showNavigator: false,
         showNavigationControl: false,
         gestureSettingsMouse: { 
             clickToZoom: false,
@@ -100,17 +98,6 @@ window.addEventListener('DOMContentLoaded', function() {
     viewer.addHandler('open', function() {
         console.log('Viewer aberto!');
         document.getElementById('loading').style.display = 'none';
-        
-        // Garantir que mini-mapa seja removido no mobile
-        if (isMobile) {
-            setTimeout(() => {
-                const navigators = document.querySelectorAll('.openseadragon-navigator');
-                navigators.forEach(nav => {
-                    nav.remove();
-                    console.log('Mini-mapa removido (mobile)');
-                });
-            }, 100);
-        }
         
         setTimeout(() => {
             criarMarcadoresLotes();
