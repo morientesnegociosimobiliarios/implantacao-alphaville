@@ -32,14 +32,6 @@ body {
     width: auto;
 }
 
-.header-title {
-    margin-left: 20px;
-    color: #ffffff;
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-}
-
 /* Visualizador OpenSeadragon */
 #openseadragon-viewer {
     position: fixed;
@@ -51,12 +43,12 @@ body {
     transition: width 0.3s ease;
 }
 
-/* Marcadores dos lotes */
+/* Marcadores dos lotes - REDUZIDOS EM 40% (de 45px para 27px) */
 .lote-marker {
-    width: 45px;
-    height: 45px;
+    width: 27px;
+    height: 27px;
     background: linear-gradient(135deg, #10b981, #059669);
-    border: 3px solid #ffffff;
+    border: 2px solid #ffffff;
     border-radius: 50%;
     cursor: pointer;
     display: flex;
@@ -64,8 +56,8 @@ body {
     justify-content: center;
     color: white;
     font-weight: bold;
-    font-size: 13px;
-    line-height: 45px;
+    font-size: 11px;
+    line-height: 27px;
     box-shadow: 0 4px 15px rgba(16, 185, 129, 0.5);
     transition: all 0.3s ease;
     text-align: center;
@@ -371,7 +363,7 @@ body {
     transform: translateY(-2px);
 }
 
-/* Controles de zoom */
+/* Controles de zoom - SEMPRE NO CANTO ESQUERDO */
 .zoom-controls {
     position: fixed;
     bottom: 30px;
@@ -479,23 +471,22 @@ body {
     100% { transform: rotate(360deg); }
 }
 
+/* Forçar remoção do mini-mapa em TODOS OS DISPOSITIVOS */
+.openseadragon-navigator {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+#openseadragon-viewer .openseadragon-navigator,
+#openseadragon-viewer > .openseadragon-navigator,
+.openseadragon-container .openseadragon-navigator {
+    display: none !important;
+}
+
 /* Responsivo Mobile */
 @media (max-width: 768px) {
-    /* Esconder mini mapa completamente */
-    .openseadragon-navigator {
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-    }
-    
-    /* Forçar ocultação em qualquer seletor */
-    #openseadragon-viewer .openseadragon-navigator,
-    #openseadragon-viewer > .openseadragon-navigator,
-    .openseadragon-container .openseadragon-navigator {
-        display: none !important;
-    }
-    
     /* Sidebar mobile: 40% da tela sempre visível */
     .sidebar {
         width: 40%;
@@ -614,33 +605,24 @@ body {
         height: 35px;
     }
     
-    .header-title {
-        font-size: 16px;
-    }
-    
     .legend {
         display: none;
     }
     
-    /* Botões de zoom - layout horizontal compacto */
+    /* Botões de zoom - SEMPRE NO CANTO ESQUERDO TAMBÉM NO MOBILE */
     .zoom-controls {
         bottom: 15px;
-        left: 50%;
-        transform: translateX(-50%);
-        flex-direction: row;
+        left: 15px;
+        flex-direction: column;
         gap: 8px;
-        background: rgba(20, 20, 20, 0.9);
-        padding: 8px 12px;
-        border-radius: 25px;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        transform: none;
     }
     
     .zoom-btn {
         width: 38px;
         height: 38px;
         font-size: 18px;
-        border-radius: 50%;
+        border-radius: 8px;
     }
     
     .zoom-btn:active {
