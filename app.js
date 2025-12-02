@@ -71,20 +71,6 @@ const lotes = [
         status: 'Disponível'
     },
     {
-        id: '21',
-        quadra: 'Q',
-        lote: '21',
-        x: 0.3396,
-        y: 0.3645,
-        area: '480,39',
-        frente: '15,64',
-        fundos: '16,39',
-        profundidade: '30,00',
-        topografia: 'Declive',
-        valor: '895.927,35',
-        status: 'Disponível'
-    },
-    {
         id: '25',
         quadra: 'R',
         lote: '25',
